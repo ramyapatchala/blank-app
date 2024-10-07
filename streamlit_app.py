@@ -96,6 +96,7 @@ def chat_completion_request(message, tools, tool_choice=None):
 
 # Function to set up VectorDB if not already created
 def setup_vectordb():
+    db_path = "Scripting_vectorDB"
     if 'Scripting_vectorDB' not in st.session_state:
         client = chromadb.PersistentClient()
         collection = client.get_or_create_collection(
@@ -145,7 +146,7 @@ def search_vectordb(query, k=3):
         return None
 
 # Streamlit App
-st.title("iSchool Student Organizations Chatbot")
+st.title("Scripting for Data Analytics Chatbot")
 
 # API key verification
 openai_api_key = st.secrets["key1"]
