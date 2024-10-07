@@ -20,21 +20,41 @@ def verify_openai_key(api_key):
         return client, True, "API key is valid"
     except Exception as e:
         return None, False, str(e)
+        
+def chunk_text(text, max_tokens=8000):
+    words = text.split()
+    chunks = []
+    current_chunk = []
+    current_length = 0
+    for word in words:
+        current_length += len(word) + 1  # account for spaces
+        if current_length > max_tokens:
+            chunks.append(' '.join(current_chunk))
+            current_chunk = [word]
+            current_length = len(word) + 1
+        else:
+            current_chunk.append(word)
+    if current_chunk:
+        chunks.append(' '.join(current_chunk))
+    return chunks
 
-# Vector DB functions
+# Use chunked text to add to collection
 def add_to_collection(collection, text, filename):
     openai_client = OpenAI(api_key=st.secrets['key1'])
-    response = openai_client.embeddings.create(
-        input=text,
-        model="text-embedding-3-small"
-    )
-    embedding = response.data[0].embedding
-    collection.add(
-        documents=[text],
-        ids=[filename],
-        embeddings=[embedding]
-    )
+    chunks = chunk_text(text)
+    for i, chunk in enumerate(chunks):
+        response = openai_client.embeddings.create(
+            input=chunk,
+            model="text-embedding-3-small"
+        )
+        embedding = response.data[0].embedding
+        collection.add(
+            documents=[chunk],
+            ids=[f"{filename}_chunk_{i}"],
+            embeddings=[embedding]
+        )
     return collection
+
 
 # OpenAI function calling setup
 tools = [
