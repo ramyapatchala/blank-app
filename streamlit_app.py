@@ -9,6 +9,8 @@ from bs4 import BeautifulSoup
 from openai import OpenAI
 import json
 import time
+from PyPDF2 import PdfReader
+
 
 # Function to verify OpenAI API key
 def verify_openai_key(api_key):
@@ -148,7 +150,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Chat input
-if prompt := st.chat_input("What would you like to know about iSchool student organizations?"):
+if prompt := st.chat_input("What would you like to know about Scripting of Data Analytics docs?"):
     # Add user message to chat history
     msg = {"role": "user", "content": prompt}
     with st.chat_message("user"):
