@@ -97,8 +97,8 @@ def chat_completion_request(message, tools, tool_choice=None):
 # Function to set up VectorDB if not already created
 def setup_vectordb():
     db_path = "Scripting_vectorDB"
-    if 'Scripting_vectorDB' not in st.session_state:
-        client = chromadb.PersistentClient()
+    if not os.path.exists(db_path):
+        client = chromadb.PersistentClient(path = db_path)
         collection = client.get_or_create_collection(
             name="ScriptingCollection",
             metadata={"hnsw:space": "cosine", "hnsw:M": 32}
@@ -116,7 +116,7 @@ def setup_vectordb():
                     text += page.extract_text()
                 collection = add_to_collection(collection, text, pdf_file)
         
-        st.session_state.Scripting_vectorDB = collection
+        #st.session_state.Scripting_vectorDB = collection
         st.success(f"VectorDB setup complete with {len(pdf_files)} PDF files!")
     else:
         st.info("VectorDB already exists. Loading from disk...")
